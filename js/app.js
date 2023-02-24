@@ -63,8 +63,8 @@ function showTodos(){
          ${item.text}
           <div class="todo-icons">
             <span class="opacity-50 me-2">${item.time}</span>
-             <img src="img/edit.svg" alt="edit image" width="25" height=" 25">
-             <img src="img/delete.svg" alt="delete image" width="25" height=" 25">
+             <img  src="img/edit.svg" alt="edit image" width="25" height=" 25">
+             <img onclick='deleteTodo(${i})' src="img/delete.svg" alt="delete image" width="25" height=" 25">
           </div>
         </li>
     `
@@ -92,4 +92,17 @@ function showMessage(where , message){
     setTimeout(()=>{
       document.getElementById(`${where}`).textContent= ''
     } , 2500)
+}
+
+
+// delete todo
+
+function deleteTodo(id){
+  const deletedTodos = todos.filter((item, index)=>{
+    return index !== id 
+
+  })
+  todos = deletedTodos
+  setTodos()
+  showTodos()
 }
