@@ -5,6 +5,7 @@ const listGroupTodo = document.getElementById("list-group-todo");
 const time = document.getElementById("time");
 const modal = document.getElementById("modal");
 const overlay = document.getElementById("overlay");
+const closeEl = document.getElementById('close')
 /* time elements */
 const fullDay = document.getElementById("full-day");
 const year = document.getElementById("year");
@@ -14,6 +15,7 @@ const hourEl  = document.getElementById('hour')
 const minuteEl  = document.getElementById('minute')
 const secondEl  = document.getElementById('second')
 
+let editItemId
 // check
 
 let todos = JSON.parse(localStorage.getItem('list')) ? JSON.parse(localStorage.getItem('list')) : []
@@ -44,7 +46,7 @@ minuteEl.textContent = minutes
 secondEl.textContent = seconds
 
 
- return (` ${hour}:${minutes}  ${date}.${ ('0'+(  month+1)).slice(-2)}.${year}`);
+ return (` ${hour}:${minutes}  ${date}.${ ('0'+( Number(month)+1)).slice(-2)}.${year}`);
 }
 
 setInterval(getTime , 1000)
@@ -59,11 +61,11 @@ function showTodos(){
   const todos = JSON.parse(localStorage.getItem('list'))
   todos.forEach((item , i)=>{
     listGroupTodo.innerHTML += `
-    <li class="list-group-item d-flex justify-content-between">
+    <li ondblclick='setCompleted(${i})' class="list-group-item d-flex justify-content-between ${item.completed  ? 'completed' : ''}">
          ${item.text}
           <div class="todo-icons">
             <span class="opacity-50 me-2">${item.time}</span>
-             <img  src="img/edit.svg" alt="edit image" width="25" height=" 25">
+             <img onclick='editTodo(${i})'  src="img/edit.svg" alt="edit image" width="25" height=" 25">
              <img onclick='deleteTodo(${i})' src="img/delete.svg" alt="delete image" width="25" height=" 25">
           </div>
         </li>
@@ -71,7 +73,21 @@ function showTodos(){
   })
 }
 
-// 
+// completed function
+function setCompleted(id){
+    const completeTodos  = todos.map((item, index)=>{
+      if( index == id ){
+        return {...item , completed : item.completed ? false : true}
+      } else {
+        return {...item}
+      }
+    })
+
+
+    todos = completeTodos
+    setTodos()
+    showTodos()
+}
 
 
 formCreate.addEventListener('click' , (e)=>{
@@ -105,4 +121,37 @@ function deleteTodo(id){
   todos = deletedTodos
   setTodos()
   showTodos()
+}
+
+formEdit.addEventListener('submit' , (e)=>{
+  e.preventDefault()
+  const todoText = formEdit['input-edit'].value.trim()
+  formEdit.reset()
+    if(todoText.length ){
+      todos.splice(editItemId , 1 ,{text: todoText , time: getTime() , completed: false})
+        setTodos()
+      showTodos()
+      closeModal()
+    } else showMessage('message-edit' , 'Please create some text...')
+})
+
+
+function editTodo(id){
+openModal()
+editItemId = id
+}
+
+function openModal(){
+modal.classList.remove('hidden')
+overlay.classList.remove('hidden')
+}
+document.addEventListener('keydown' , (e)=>{
+  if(e.which == 27) closeModal()
+
+})
+overlay.addEventListener('click' , closeModal)
+closeEl.addEventListener('click' , closeModal)
+function closeModal(){
+  modal.classList.add('hidden')
+  overlay.classList.add('hidden')
 }
