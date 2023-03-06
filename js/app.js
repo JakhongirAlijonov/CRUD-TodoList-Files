@@ -77,7 +77,7 @@ function showTodos(){
 function setCompleted(id){
     const completeTodos  = todos.map((item, index)=>{
       if( index == id ){
-        return {...item , completed : item.completed ? false : true}
+        return {...item, completed : item.completed ? false : true}
       } else {
         return {...item}
       }
